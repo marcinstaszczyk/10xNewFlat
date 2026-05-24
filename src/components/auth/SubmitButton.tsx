@@ -1,31 +1,29 @@
-import type { ReactNode } from "react";
-import { useFormStatus } from "react-dom";
+import type { JSX } from "solid-js";
 import { Button } from "@/components/ui/button";
 
 interface SubmitButtonProps {
+  pending: boolean;
   pendingText: string;
-  icon: ReactNode;
-  children: ReactNode;
+  icon: JSX.Element;
+  children: JSX.Element;
 }
 
-export function SubmitButton({ pendingText, icon, children }: SubmitButtonProps) {
-  const { pending } = useFormStatus();
-
+export function SubmitButton(props: SubmitButtonProps) {
   return (
     <Button
       type="submit"
-      disabled={pending}
-      className="w-full rounded-lg bg-purple-600 px-4 py-2 font-medium text-white transition-colors hover:bg-purple-500"
+      disabled={props.pending}
+      class="w-full rounded-lg bg-purple-600 px-4 py-2 font-medium text-white transition-colors hover:bg-purple-500"
     >
-      {pending ? (
-        <span className="flex items-center gap-2">
-          <span className="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-          {pendingText}
+      {props.pending ? (
+        <span class="flex items-center gap-2">
+          <span class="size-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+          {props.pendingText}
         </span>
       ) : (
-        <span className="flex items-center gap-2">
-          {icon}
-          {children}
+        <span class="flex items-center gap-2">
+          {props.icon}
+          {props.children}
         </span>
       )}
     </Button>

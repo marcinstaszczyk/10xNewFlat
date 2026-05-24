@@ -7,7 +7,7 @@ A modern, opinionated starter template for building fast, accessible web applica
 ## Tech Stack
 
 - [Astro](https://astro.build/) v6 - Modern web framework with server-first rendering
-- [React](https://react.dev/) v19 - UI library for interactive components
+- [SolidJS](https://www.solidjs.com/) v1 - UI library for interactive components
 - [TypeScript](https://www.typescriptlang.org/) v5 - Type-safe JavaScript
 - [Tailwind CSS](https://tailwindcss.com/) v4 - Utility-first CSS framework
 - [Supabase](https://supabase.com/) - Authentication and backend-as-a-service
@@ -64,7 +64,7 @@ pnpm run dev
 │ ├── layouts/ # Astro layouts
 │ ├── pages/ # Astro pages
 │ │ └── api/ # API endpoints
-│ ├── components/ # UI components (Astro & React)
+│ ├── components/ # UI components (Astro & SolidJS)
 │ └── assets/ # Static assets
 ├── public/ # Public assets
 ├── wrangler.jsonc # Cloudflare Workers config

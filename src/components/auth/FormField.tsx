@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
-import { CircleAlert } from "lucide-react";
+import type { JSX } from "solid-js";
+import { CircleAlert } from "lucide-solid";
 import { cn } from "@/lib/utils";
 
 const inputBase =
@@ -14,54 +14,42 @@ interface FormFieldProps {
   onChange: (value: string) => void;
   placeholder?: string;
   error?: string;
-  hint?: ReactNode;
-  icon: ReactNode;
-  endContent?: ReactNode;
+  hint?: JSX.Element;
+  icon: JSX.Element;
+  endContent?: JSX.Element;
 }
 
-export function FormField({
-  id,
-  name,
-  label,
-  type = "text",
-  value,
-  onChange,
-  placeholder,
-  error,
-  hint,
-  icon,
-  endContent,
-}: FormFieldProps) {
+export function FormField(props: FormFieldProps) {
   return (
     <div>
-      <label htmlFor={id} className="mb-1 block text-sm text-blue-100/80">
-        {label}
+      <label for={props.id} class="mb-1 block text-sm text-blue-100/80">
+        {props.label}
       </label>
-      <div className="relative">
-        <span className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-white/40">{icon}</span>
+      <div class="relative">
+        <span class="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-white/40">{props.icon}</span>
         <input
-          id={id}
-          name={name ?? id}
-          type={type}
-          value={value}
-          onChange={(e) => {
-            onChange(e.target.value);
+          id={props.id}
+          name={props.name ?? props.id}
+          type={props.type ?? "text"}
+          value={props.value}
+          onInput={(event) => {
+            props.onChange(event.currentTarget.value);
           }}
-          placeholder={placeholder}
-          className={cn(
+          placeholder={props.placeholder}
+          class={cn(
             inputBase,
-            error ? "border-red-400/60 focus:ring-red-400" : "border-white/20 focus:ring-purple-400",
+            props.error ? "border-red-400/60 focus:ring-red-400" : "border-white/20 focus:ring-purple-400",
           )}
         />
-        {endContent}
+        {props.endContent}
       </div>
-      {error ? (
-        <p className="mt-1 flex items-center gap-1 text-xs text-red-300">
-          <CircleAlert className="size-3" />
-          {error}
+      {props.error ? (
+        <p class="mt-1 flex items-center gap-1 text-xs text-red-300">
+          <CircleAlert class="size-3" />
+          {props.error}
         </p>
       ) : (
-        hint
+        props.hint
       )}
     </div>
   );
