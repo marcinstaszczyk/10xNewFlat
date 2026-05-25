@@ -6,20 +6,17 @@ This is an Astro 6 server-rendered app with SolidJS islands, Tailwind CSS v4, Su
 
 - Do not write under @context/archive/; archived changes are immutable.
 - Treat Supabase env values as server-only secrets. Add or rename variables in @astro.config.mjs, and keep `.env`, `.dev.vars`, and @.env.example aligned.
-- Do not invent a test command: no test runner or test config exists. Use lint/build plus focused manual checks unless a task explicitly adds tests.
+- Do not invent a test command: no test runner or test config exists. For UI/auth changes, run `pnpm run dev` and manually verify the affected route or auth flow; otherwise state why no manual check was needed.
 
 ## Commands
 
-- `pnpm install` installs dependencies; Node version is fixed in @.nvmrc.
-- `pnpm run dev` starts the Astro development server.
-- `pnpm run lint` runs ESLint strict type-checked rules, Astro rules, a11y checks, and Prettier integration.
-- `pnpm run build` creates the production build for the Cloudflare adapter.
-- `pnpm run format` formats supported files with Prettier and Tailwind class sorting.
+- Use scripts from @package.json; Node version is fixed in @.nvmrc.
+- Before handing off, run `pnpm run lint` and `pnpm run build` unless the change only touches docs; report skipped commands.
 - CI in @.github/workflows/ci.yml uses `npm ci`, `npx astro sync`, `npm run lint`, and `npm run build`; account for both lockfiles when changing dependencies.
 
 ## Structure
 
-- `src/pages/` holds Astro routes; API endpoints live in `src/pages/api/**` and export `APIRoute` handlers.
+- API endpoints live in `src/pages/api/**` and export `APIRoute` handlers.
 - `src/components/` holds Astro components and Solid `.tsx` islands; shared primitives live in `src/components/ui/`.
 - `src/lib/` holds reusable helpers such as `createClient` and `cn`.
 - `src/middleware.ts` owns auth population and `PROTECTED_ROUTES`; add protected paths there.
@@ -31,4 +28,4 @@ Use `@/` imports for `src` paths. Solid components use `PascalCase.tsx`, local i
 
 ## Git
 
-Recent history uses short Conventional Commit prefixes, mainly `chore:` and `docs:`. Before handing off, run the relevant local commands and ensure the GitHub Actions CI gate can pass with required Supabase secrets.
+Recent history uses short Conventional Commit prefixes, mainly `chore:` and `docs:`. Ensure the GitHub Actions CI gate can pass with required Supabase secrets.
