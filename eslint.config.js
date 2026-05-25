@@ -49,6 +49,13 @@ const typescriptConfig = {
   },
 };
 
+const tsxConfig = {
+  files: ["**/*.tsx"],
+  rules: {
+    "max-lines-per-function": ["warn", { max: 160, skipBlankLines: true, skipComments: true }],
+  },
+};
+
 const astroConfig = {
   files: ["**/*.astro"],
   rules: {
@@ -62,6 +69,7 @@ export default defineConfig(
   includeIgnoreFile(gitignorePath),
   javascriptConfig,
   typescriptConfig,
+  tsxConfig,
   eslintPluginAstro.configs["flat/recommended"],
   ...eslintPluginAstro.configs["flat/jsx-a11y-recommended"],
   astroConfig,
