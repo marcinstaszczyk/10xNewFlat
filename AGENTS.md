@@ -2,10 +2,14 @@
 
 This is an Astro 6 server-rendered app with SolidJS islands, Tailwind CSS v4, Supabase auth, and Cloudflare Workers deployment. Product and stack context lives in @context/foundation/prd.md and @context/foundation/tech-stack.md.
 
-## Hard Rules
+## Critical Rules
 
+- Keep `output: "server"` in @astro.config.mjs; API routes must export `const prerender = false`.
+- `src/middleware.ts` resolves the user on every request and stores it in `context.locals.user`. Use that value for protected server-rendered pages instead of client-side auth checks.
+- Supabase env values are server-only secrets. Create server clients through `src/lib/supabase.ts`; keep `SUPABASE_URL` and `SUPABASE_KEY` server-only via `astro:env/server`. Add or rename variables in @astro.config.mjs, and keep `.env`, `.dev.vars`, and @.env.example aligned.
+- New Supabase tables must enable RLS and define explicit SELECT, INSERT, UPDATE, and DELETE policies for each role that can access the table.
+- API routes use uppercase `GET`/`POST` exports, set `prerender = false`, and validate request input with zod.
 - Do not write under @context/archive/; archived changes are immutable.
-- Treat Supabase env values as server-only secrets. Add or rename variables in @astro.config.mjs, and keep `.env`, `.dev.vars`, and @.env.example aligned.
 - Do not invent a test command: no test runner or test config exists. For UI/auth changes, run `pnpm run dev` and manually verify the affected route or auth flow; otherwise state why no manual check was needed.
 
 ## Commands
@@ -14,18 +18,38 @@ This is an Astro 6 server-rendered app with SolidJS islands, Tailwind CSS v4, Su
 - Before handing off, run `pnpm run lint` and `pnpm run build` unless the change only touches docs; report skipped commands.
 - CI in @.github/workflows/ci.yml uses `npm ci`, `npx astro sync`, `npm run lint`, and `npm run build`; account for both lockfiles when changing dependencies.
 
-## Structure
+## Project Shape
 
+- Stack: Astro 6 SSR, SolidJS islands, Tailwind 4, Supabase auth, shadcn/ui components, Cloudflare Workers.
 - API endpoints live in `src/pages/api/**` and export `APIRoute` handlers.
+- Auth endpoints live in `src/pages/api/auth/{signin,signup,signout}.ts`; pages live in `src/pages/auth/{signin,signup,confirm-email}.astro`; protected page example is `src/pages/dashboard.astro`.
 - `src/components/` holds Astro components and Solid `.tsx` islands; shared primitives live in `src/components/ui/`.
 - `src/lib/` holds reusable helpers such as `createClient` and `cn`.
 - `src/middleware.ts` owns auth population and `PROTECTED_ROUTES`; add protected paths there.
+- Shared entities and DTOs go in `src/types.ts`.
 - `supabase/` contains local Supabase config; @wrangler.jsonc owns Cloudflare runtime settings.
 
-## Conventions
+## Coding Conventions
 
-Use `@/` imports for `src` paths. Solid components use `PascalCase.tsx`, local interfaces named `Props`, `createSignal` local state, and default exports for page-level islands. API auth handlers redirect with query-string errors and call `createClient(context.request.headers, context.cookies)`; preserve the null-client path because auth is disabled when Supabase config is missing. UI variants follow the existing `cva` pattern in @src/components/ui/button.tsx.
+- Use `@/` imports for `src` paths; `@/*` maps to `./src/*` in @tsconfig.json.
+- Use Astro components for static content/layout; use SolidJS only when interactivity is needed.
+- Solid components use `PascalCase.tsx`, local interfaces named `Props`, `createSignal` local state, and default exports for page-level islands.
+- Move Solid logic shared by 2+ components to `src/components/hooks/use<Name>.ts`; keep page-only signals local.
+- Use `cn()` from `@/lib/utils` for conditional or merged Tailwind classes; do not concatenate class strings manually.
+- UI variants follow the existing `cva` pattern in @src/components/ui/button.tsx. Components in `src/components/ui/` follow the shadcn-style "new-york" variant.
+- API auth handlers redirect with query-string errors and call `createClient(context.request.headers, context.cookies)`; preserve the null-client path because auth is disabled when Supabase config is missing.
+- Put cross-route/domain operations used by 2+ callers in `src/lib/services/<name>.ts`; keep single-use helpers beside the caller.
+- Name Supabase migrations `YYYYMMDDHHmmss_short_description.sql` in `supabase/migrations/`.
 
 ## Git
 
-Recent history uses short Conventional Commit prefixes, mainly `chore:` and `docs:`. Ensure the GitHub Actions CI gate can pass with required Supabase secrets.
+- Recent history uses short Conventional Commit prefixes, mainly `chore:` and `docs:`.
+- Ensure the GitHub Actions CI gate can pass with required Supabase secrets.
+
+## References
+
+- Scripts and lint-staged config: @package.json.
+- Setup, Supabase local dev, and deployment: @README.md.
+- Node version: @.nvmrc.
+- Env template: @.env.example.
+- CI workflow: @.github/workflows/ci.yml.
