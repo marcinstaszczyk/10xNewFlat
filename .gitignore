@@ -20,6 +20,10 @@ pnpm-debug.log*
 # cloudflare
 .dev.vars
 .wrangler/
+.wrangler-home/
+.wrangler-config/
+.wrangler-cache/
+.wrangler-logs/
 # macOS-specific files
 .DS_Store
 # jetbrains setting folder
