@@ -1,6 +1,6 @@
-/* eslint-disable @typescript-eslint/no-deprecated -- tseslint.config() is the only way to use extends; core defineConfig has incompatible API */
 import { includeIgnoreFile } from "@eslint/config-helpers";
 import eslint from "@eslint/js";
+import { defineConfig } from "eslint/config";
 import eslintPluginPrettier from "eslint-plugin-prettier/recommended";
 import eslintPluginAstro from "eslint-plugin-astro";
 import path from "node:path";
@@ -8,7 +8,16 @@ import tseslint from "typescript-eslint";
 
 const gitignorePath = path.resolve(import.meta.dirname, ".gitignore");
 
-const baseConfig = tseslint.config({
+const javascriptConfig = {
+  files: ["**/*.{js,mjs,cjs}"],
+  extends: [eslint.configs.recommended],
+  rules: {
+    "no-console": "warn",
+  },
+};
+
+const typescriptConfig = {
+  files: ["**/*.{ts,tsx}"],
   extends: [eslint.configs.recommended, tseslint.configs.strictTypeChecked, tseslint.configs.stylisticTypeChecked],
   languageOptions: {
     parserOptions: {
@@ -32,20 +41,33 @@ const baseConfig = tseslint.config({
     "@typescript-eslint/restrict-template-expressions": ["error", { allowNumber: true }],
     "@typescript-eslint/no-misused-promises": ["error", { checksVoidReturn: { attributes: false } }],
   },
-});
+};
 
-const astroConfig = tseslint.config({
+const astroConfig = {
   files: ["**/*.astro"],
   rules: {
     "astro/no-set-html-directive": "error",
     "astro/no-unused-css-selector": "warn",
     "astro/prefer-class-list-directive": "warn",
   },
-});
+};
 
-export default tseslint.config(
+const structureConfig = {
+  files: ["src/**/*.{ts,tsx}"],
+  rules: {
+    "max-lines": ["error", { max: 220, skipBlankLines: true, skipComments: true }],
+    "max-lines-per-function": ["warn", { max: 80, skipBlankLines: true, skipComments: true }],
+    complexity: ["warn", 10],
+    "max-depth": ["warn", 3],
+    "max-params": ["warn", 4],
+  },
+};
+
+export default defineConfig(
   includeIgnoreFile(gitignorePath),
-  baseConfig,
+  javascriptConfig,
+  typescriptConfig,
+  structureConfig,
   eslintPluginAstro.configs["flat/recommended"],
   ...eslintPluginAstro.configs["flat/jsx-a11y-recommended"],
   astroConfig,
